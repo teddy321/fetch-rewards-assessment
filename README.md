@@ -1,7 +1,7 @@
 # fetch-rewards-assessment
-## Fetch Rewards Coding Exercise - Data Analyst
+Fetch Rewards Coding Exercise - Data Analyst
 
-## FILES included:
+### FILES included:
 
 #### ./analyze-data.ipynb - python notebook to analyze datasets and identify data issues
 #### ./parse-files-to-csv.ipynb - python notebook to parse datasets to csv format to import into Postgres (pgAdmin4)
