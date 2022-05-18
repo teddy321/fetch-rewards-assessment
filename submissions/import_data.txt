@@ -1,0 +1,101 @@
+--!!!POSTGRES SQL ENV!!!
+
+--create 'BRANDS' table under 'PUBLIC' schema
+CREATE TABLE public.brands(
+_id varchar(250) PRIMARY KEY NOT NULL,
+barcode varchar(250),
+category varchar(250),
+categoryCode varchar(250),
+name varchar(250),
+topBrand varchar(250),
+brandCode varchar(250),
+cpg_id varchar(250),
+ref varchar(250));
+
+--insert data to 'BRANDS' table from brands.csv file
+COPY public.brands FROM 'C:\Users\teddy\repos\parse-data\outputs\brands.csv' DELIMITER ',' CSV HEADER;
+
+--check that data is there
+SELECT * FROM public.brands;
+
+--create 'USERS' table under 'PUBLIC' schema
+CREATE TABLE public.users(
+_id varchar(250) PRIMARY KEY NOT NULL, 
+active bool, 
+createdDate timestamp, 
+lastLogin timestamp, 
+role varchar(250), 
+signUpSource varchar(250), 
+state varchar(250));
+
+--insert data to 'USERS' table from users.csv file
+COPY public.users FROM 'C:\Users\teddy\repos\parse-data\outputs\users.csv' DELIMITER ',' CSV HEADER;
+
+--check that data is there
+SELECT * FROM public.users;
+
+--create 'RECEIPTS' table under 'PUBLIC' schema
+CREATE TABLE public.receipts(
+_id varchar(250) PRIMARY KEY NOT NULL,
+bonusPointsEarned numeric,
+bonusPointsEarnedReason varchar(250),
+createDate timestamp,
+dateScanned timestamp,
+finishedDate timestamp,
+modifyDate timestamp,
+pointsAwardedDate timestamp,
+pointsEarned numeric,
+purchaseDate timestamp,
+purchasedItemCount numeric,
+rewardsReceiptStatus varchar(250),
+totalSpent numeric,
+userId varchar(250));
+
+--insert data to 'RECEIPTS' table from receipts.csv file
+COPY public.receipts FROM 'C:\Users\teddy\repos\parse-data\outputs\receipts.csv' DELIMITER ',' CSV HEADER;
+
+--check that data is there
+SELECT * FROM public.receipts;
+
+--create 'RECEIPTS_REWARDS_ITEMS' table under 'PUBLIC' schema
+CREATE TABLE public.rewards_receipts_items(
+receipt_id varchar(250) PRIMARY KEY NOT NULL,
+originalMetaBriteQuantityPurchased varchar(250),
+brandCode varchar(250),
+partnerItemId varchar(250),
+barcode varchar(250),
+itemPrice numeric,
+preventTargetGapPoints bool,
+originalReceiptItemText varchar(250),
+needsFetchReviewReason varchar(250),
+itemNumber varchar(250),
+priceAfterCoupon numeric,
+pointsEarned numeric,
+userFlaggedBarcode varchar(250),
+pointsNotAwardedReason varchar(250),
+needsFetchReview bool,
+description varchar(250),
+discountedItemPrice numeric,
+competitorRewardsGroup varchar(250),
+userFlaggedNewItem bool,
+userFlaggedQuantity numeric,
+pointsPayerId varchar(250),
+rewardsGroup varchar(250),
+userFlaggedDescription varchar(250),
+metabriteCampaignId varchar(250),
+userFlaggedPrice numeric,
+targetPrice numeric,
+originalMetaBriteDescription varchar(250),
+competitiveProduct bool,
+finalPrice numeric,
+quantityPurchased numeric,
+originalMetaBriteBarcode varchar(250),
+rewardsProductPartnerId varchar(250),
+deleted bool);
+
+--insert data to 'RECEIPTS_REWARDS_ITEMS' table from recipts_v.csv file
+COPY public.rewards_receipts_items FROM 'C:\Users\teddy\repos\parse-data\outputs\receipts_v.csv' DELIMITER ',' CSV HEADER;
+
+--check that data is there
+SELECT * FROM public.rewards_receipts_items;
+

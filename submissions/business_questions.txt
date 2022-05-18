@@ -1,0 +1,83 @@
+--!!!POSTGRES SQL ENV!!!
+
+--1) What are the top 5 brands by receipts scanned for most recent month?
+--2) How does the ranking of the top 5 brands by receipts scanned for the recent month compare to the ranking for the previous month?
+
+--create temp table ranking months (latest to oldest) and records (most receipt ids to least receipt ids)
+WITH receipts_monthly_brand
+AS(SELECT DISTINCT TO_CHAR(r.createdate, 'YYYY-MM') AS createDate, i.brandcode, COUNT(r._id) AS receipts, DENSE_RANK() OVER(PARTITION BY TO_CHAR(r.createdate, 'YYYY-MM') ORDER BY COUNT(r._id) DESC) AS receipts_rank, DENSE_RANK() OVER(ORDER BY TO_CHAR(r.createdate, 'YYYY-MM') DESC) AS createdate_rank
+FROM public.receipts r, public.rewards_receipts_items i
+WHERE r._id = i.receiptId
+GROUP BY TO_CHAR(r.createdate, 'YYYY-MM'), i.brandcode
+ORDER BY TO_CHAR(r.createdate, 'YYYY-MM') DESC, receipts_rank ASC)
+--return records for latest 2 months for top 5 brands by receipt id count
+SELECT *
+FROM receipts_monthly_brand
+WHERE receipts_rank <= 5
+AND createdate_rank <= 2
+ORDER BY createdate DESC, receipts DESC;
+
+--3) When considering average spend from receipts with 'rewardsReceiptStatus’ of ‘Accepted’ or ‘Rejected’, which is greater?
+
+--return average total spend per reward receipt status for 'ACCEPTED' and 'REJECTED' status type
+SELECT rewardsreceiptstatus, ROUND(AVG(totalspent), 2)
+FROM public.receipts
+WHERE rewardsreceiptstatus IN ('ACCEPTED', 'REJECTED')
+GROUP BY rewardsreceiptstatus;
+
+--4) When considering total number of items purchased from receipts with 'rewardsReceiptStatus’ of ‘Accepted’ or ‘Rejected’, which is greater?
+
+--create temp table of all receipt ids, barcodes, and reward receipt status
+WITH receipts_items_status
+AS(SELECT DISTINCT r._id, i.barcode, r.rewardsreceiptstatus
+  FROM public.receipts r, public.rewards_receipts_items i
+  WHERE r._id = i.receiptId
+  AND i.barcode IS NOT NULL),
+--create temp table with 'REJECTED' and 'ACCEPTED' status types as column headers with count of items purchased as values ('ACCEPTED' value naming convention applied, does not exist under 'rewardsreceiptstatus', but 'FINISHED' value does)
+receipts_items_status_agg
+AS(SELECT
+SUM(CASE rewardsreceiptstatus
+   WHEN 'REJECTED' THEN 1
+   ELSE 0
+   END) AS rejected,
+SUM(CASE rewardsreceiptstatus
+   WHEN 'ACCEPTED' THEN 1
+   ELSE 0
+   END) AS accepted
+FROM receipts_items_status)
+--return which status type contains the most items purchased
+SELECT *, 
+CASE
+   WHEN rejected > accepted THEN 'REJECTED'
+   WHEN rejected < accepted THEN 'ACCEPTED'
+END AS largest_rewards_status
+FROM receipts_items_status_agg;
+
+--5) Which brand has the most spend among users who were created within the past 6 months?
+
+--return brand name with most total spent for users created within the past 6 months
+SELECT i.brandcode, b.name, SUM(r.totalspent) as totalspent
+FROM public.receipts r, public.rewards_receipts_items i, public.brands b
+WHERE r.userid IN (SELECT DISTINCT _id
+FROM public.users 
+WHERE DATE(createddate) >= (CURRENT_DATE - (7 * 4 * 6)))
+AND r._id = i.receiptId
+AND i.brandcode = b.brandcode
+GROUP BY i.brandcode, b.name
+ORDER BY SUM(r.totalspent) DESC
+LIMIT 1;
+
+--6) Which brand has the most transactions among users who were created within the past 6 months?
+
+--return brand name with receipt ids for users created within the past 6 months
+SELECT *
+FROM (SELECT i.brandcode, b.name, COUNT(r._id) as transactions, DENSE_RANK() OVER(ORDER BY COUNT(r._id) DESC) AS receipts_rank
+FROM public.receipts r, public.rewards_receipts_items i, public.brands b
+WHERE r.userid IN (SELECT DISTINCT _id
+FROM public.users 
+WHERE DATE(createddate) >= (CURRENT_DATE - (7 * 4 * 6)))
+AND r._id = i.receiptId
+AND i.brandcode = b.brandcode
+GROUP BY i.brandcode, b.name
+ORDER BY COUNT(r._id) DESC) AS t
+WHERE t.receipts_rank = 1;
