@@ -8,10 +8,10 @@ After reviewing the datasets provided in the brands.json, receipts.json, and use
 -For the users.json dataset, there are 131 records with missing/null values under any field and 283 duplicate records under "_id"
 -For the receipts.json dataset, under the "rewardsReceiptItemList" field, there is varying level of item level detail per receipt "_id". Some records have a max of 16 nested keys/fields, while some records have 0 (no item level detail).
 
-Please see the attached analyze-data.ipynb file for reference on metrics gathered. In summary, I read in the datasets from the ".json" files to Python Dataframes and passed these data structures through various high level functions to flag anomolies. Based on these findings, I have a few questions that I am hoping you can provide clarity on (or provide a contact who I may follow up wiht):
+Please see the attached analyze-data.ipynb file for reference on metrics gathered. In summary, I read in the datasets from the ".json" files to Python Dataframes and passed these data structures through various high level functions to flag anomolies. Based on these findings, I have a few questions that I am hoping you can provide clarity on (or provide a contact who I may follow up with):
 
 -Within the receipts.json and brands.json datasets, does the "barcode" field from the nested "rewardsReceiptItemList" json object map to the "barcode" field on the brands.json dataset?
--Within the users.json dataset, is there rationale behind the existence of duplicate "_id" values? If this is an issue, should the valid record be determined from the oldest "createdDate" timestamp with "active" status as "True"? Does "fetch-staff" fole take precedence over "consumer"?
+-Within the users.json dataset, is there rationale behind the existence of duplicate "_id" values? If this is an issue, should the valid record be determined from the oldest "createdDate" timestamp with "active" status as "True"? Does "fetch-staff" role take precedence over "consumer"?
 
 In summary, I have identified that for the receipts.json dataset, 61% of receipts have item level detail and 39% of receipts do not have item level detail. This will present a challenge in production has 39% of receipts will have no mapping/visiblity to item and brand level detail. As a follow up, I recommend further research on upstream datasources and data collection methodologies to identify the source of the gaps in data.
 
