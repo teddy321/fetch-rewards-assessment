@@ -18,5 +18,5 @@ Fetch Rewards Coding Exercise - Data Analyst
 
 #### ./outputs/brands.csv - parsed data in csv format from brands.json file
 #### ./outputs/receipts.csv - parsed data in csv format from receipts.json file
-#### ./outputs/receipts_v.csv - parsed data in csv format from receipts.json file (subset of data from 'rewardsReceiptItemList' field)
+#### ./outputs/receipts_v.csv - parsed data in csv format from receipts.json file (subset of data from 'rewardsReceiptItemList' obj)
 #### ./outputs/users.csv - parsed data in csv format from users.json file
